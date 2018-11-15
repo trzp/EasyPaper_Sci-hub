@@ -1,0 +1,62 @@
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <title></title>
+<style id="system" type="text/css">*{margin:0;padding:0;}body {	font:13.34px helvetica,arial,freesans,clean,sans-serif;	color:black;	line-height:1.4em;	background-color: #F8F8F8;	padding: 0.7em;}p {	margin:1em 0;	line-height:1.5em;}table {	font-size:inherit;	font:100%;	margin:1em;}table th{border-bottom:1px solid #bbb;padding:.2em 1em;}table td{border-bottom:1px solid #ddd;padding:.2em 1em;}input[type=text],input[type=password],input[type=image],textarea{font:99% helvetica,arial,freesans,sans-serif;}select,option{padding:0 .25em;}optgroup{margin-top:.5em;}pre,code{font:12px Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;}pre {	margin:1em 0;	font-size:12px;	background-color:#eee;	border:1px solid #ddd;	padding:5px;	line-height:1.5em;	color:#444;	overflow:auto;	-webkit-box-shadow:rgba(0,0,0,0.07) 0 1px 2px inset;	-webkit-border-radius:3px;	-moz-border-radius:3px;border-radius:3px;white-space: pre-wrap;word-wrap:break-word;}pre code {	padding:0;	font-size:12px;	background-color:#eee;	border:none;}code {	font-size:12px;	background-color:#f8f8ff;	color:#444;	padding:0 .2em;	border:1px solid #dedede;}img{border:0;max-width:100%;}abbr{border-bottom:none;}a{color:#4183c4;text-decoration:none;}a:hover{text-decoration:underline;}a code,a:link code,a:visited code{color:#4183c4;}h2,h3{margin:1em 0;}h1,h2,h3,h4,h5,h6{border:0;}h1{font-size:170%;border-top:4px solid #aaa;padding-top:.5em;margin-top:1.5em;}h1:first-child{margin-top:0;padding-top:.25em;border-top:none;}h2{font-size:150%;margin-top:1.5em;border-top:4px solid #e0e0e0;padding-top:.5em;}h3{margin-top:1em;}hr{border:1px solid #ddd;}ul{margin:1em 0 1em 2em;}ol{margin:1em 0 1em 2em;}ul li,ol li{margin-top:.5em;margin-bottom:.5em;}ul ul,ul ol,ol ol,ol ul{margin-top:0;margin-bottom:0;}blockquote{margin:1em 0;border-left:5px solid #ddd;padding-left:.6em;color:#555;}dt{font-weight:bold;margin-left:1em;}dd{margin-left:2em;margin-bottom:1em;}@media screen and (min-width: 768px) {    body {        width: 748px;        margin:10px auto;    }}</style><style id="custom" type="text/css"></style></head>
+<body><p><img src="logo//logo.png" alt="EasyPaper-SCI-Hub">
+</p>
+<h2>EasyPaper_SCI-Hub是什么?</h2>
+<p>是一个基于SCI-Hub的批量文献下载工具
+
+</p>
+<h2>EasyPaper_SCI-Hub有什么特点？</h2>
+<p>只需要将从文献数据库生成的.bib类型的题录文件传递给它，它就可以帮你完成文献的批量下载
+
+</p>
+<h2>环境依赖</h2>
+<ul>
+<li>chrome浏览器</li>
+<li>和你的chrome浏览器版本匹配的<a href="http://npm.taobao.org/mirrors/chromedriver/">chromedriver</a></li>
+<li>将下载的chromedriver.exe放置在某个目录如c:\program files\chromedriver，并将该目录添到加环境变量</li>
+<li>python2</li>
+<li>依赖的python包有：<a href="https://github.com/sciunto-org/python-bibtexparser">bibtexparser</a>, selenium, bs4, json</li>
+</ul>
+<h2>使用方法</h2>
+<ul>
+<li>准备bib文件<ul>
+<li>首先你需要准备好你要下载文献的相关信息，我们这里需要的是.bib文件，且每个题录提供有DOI号码 </li>
+<li>推荐使用web of science搜索确定题录并将其导出为bib文献格式，如果该选项不可用，您可以先尝试将其导出为endnote格式，导入endnote数据库之后通过endnote导出为bib亦可</li>
+<li>假设您准备的bib文件为d:\mypaper\paper.bib, 并且计划将下载的文献放置在d:\mypaper中</li>
+</ul>
+</li>
+<li><p>运行脚本</p>
+<ul>
+<li><p>编辑脚本，如demo.py</p>
+<pre><code class="lang-javascript">#coding:utf-8
+
+from easy_paper import *
+from msvcrt import getch
+
+def demo():
+  ep = EasyPaper('d:\mypaper\paper.bib','d:\mypaper')
+  ep.main(1)
+  ep.rename_files()
+  print '&gt;&gt;&gt;&gt; do not close this process until all files downloaded &gt;&gt;&gt;'
+  print u'确认浏览器完成所有下载后，任意键将文件重命名并结束'
+  getch()
+
+if __name__ == '__main__':
+  demo()</code></pre>
+</li>
+<li><p>这个脚本运行后，将从提供的bib文件中读取相关信息并启动chrome浏览器搜索相关文献并下载，由于sci-hub有时需要输入验证码，因此在每次请求时对这类网页将直接丢弃，并重新尝试。ep.main(2)的参数就是指重连的次数。很多情况下重连能够解决验证码问题。</p>
+</li>
+<li>每次重连都将根据已经下载的文献确定哪些需要重新下载，由于浏览器下载的文件名随机性很大，因此我不能保证对所有文件都有十足把握</li>
+<li>因此，不宜将重连次数设置过大，以免产生重复下载</li>
+<li>建议在下载完成后，手动在bib中删除已经下载的文献信息，再重试。</li>
+</ul>
+</li>
+</ul>
+<h2>任何建议请联系</h2>
+<ul>
+<li>mrtang@nudt.edu.cn
+</ul>
+</body><style type="text/css">#yddContainer{display:block;font-family:Microsoft YaHei;position:relative;width:100%;height:100%;top:-4px;left:-4px;font-size:12px;border:1px solid}#yddTop{display:block;height:22px}#yddTopBorderlr{display:block;position:static;height:17px;padding:2px 28px;line-height:17px;font-size:12px;color:#5079bb;font-weight:bold;border-style:none solid;border-width:1px}#yddTopBorderlr .ydd-sp{position:absolute;top:2px;height:0;overflow:hidden}.ydd-icon{left:5px;width:17px;padding:0px 0px 0px 0px;padding-top:17px;background-position:-16px -44px}.ydd-close{right:5px;width:16px;padding-top:16px;background-position:left -44px}#yddKeyTitle{float:left;text-decoration:none}#yddMiddle{display:block;margin-bottom:10px}.ydd-tabs{display:block;margin:5px 0;padding:0 5px;height:18px;border-bottom:1px solid}.ydd-tab{display:block;float:left;height:18px;margin:0 5px -1px 0;padding:0 4px;line-height:18px;border:1px solid;border-bottom:none}.ydd-trans-container{display:block;line-height:160%}.ydd-trans-container a{text-decoration:none;}#yddBottom{position:absolute;bottom:0;left:0;width:100%;height:22px;line-height:22px;overflow:hidden;background-position:left -22px}.ydd-padding010{padding:0 10px}#yddWrapper{color:#252525;z-index:10001;background:url(moz-extension://bceda6bd-db91-4d4b-8272-40780d0c9a2f/ab20.png);}#yddContainer{background:#fff;border-color:#4b7598}#yddTopBorderlr{border-color:#f0f8fc}#yddWrapper .ydd-sp{background-image:url(moz-extension://bceda6bd-db91-4d4b-8272-40780d0c9a2f/ydd-sprite.png)}#yddWrapper a,#yddWrapper a:hover,#yddWrapper a:visited{color:#50799b}#yddWrapper .ydd-tabs{color:#959595}.ydd-tabs,.ydd-tab{background:#fff;border-color:#d5e7f3}#yddBottom{color:#363636}#yddWrapper{min-width:250px;max-width:400px;}</style></html>
